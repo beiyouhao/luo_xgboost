@@ -27,19 +27,19 @@ def data_prepare():
 
     data1 = np.loadtxt('/home/whsse/Data/Total/公交车.txt', dtype=float)
     dataset1 = np.random.permutation(data1)
-    print dataset1.shape
+    print(dataset1.shape)
 
     data2 = np.loadtxt('/home/whsse/Data/Total/小汽车.txt', dtype=float)
     dataset2 = np.random.permutation(data2)
-    print dataset2.shape
+    print(dataset2.shape)
 
     data3 = np.loadtxt('/home/whsse/Data/Total/火车.txt', dtype=float)
     dataset3 = np.random.permutation(data3)
-    print dataset3.shape
+    print(dataset3.shape)
 
     data4 = np.loadtxt('/home/whsse/Data/Total/地铁.txt', dtype=float)
     dataset4 = np.random.permutation(data4)
-    print dataset4.shape
+    print(dataset4.shape)
 
     len1 = len(dataset1)
     len2 = len(dataset2)
@@ -212,7 +212,7 @@ def predict(model, x_test, y_test):
     y_pred = np.array(map(get_class, predictions))
     if y_test is not None:
         y_true = np.array(map(get_class, y_test))
-        print "准确率：" + str(accuracy_score(y_true, y_pred))
+        print("准确率：" + str(accuracy_score(y_true, y_pred)))
     return y_true, y_pred
 
 

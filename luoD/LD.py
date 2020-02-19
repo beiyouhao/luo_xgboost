@@ -53,7 +53,7 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
 def main():
     print("--------  Start  --------")
 
-    datax = np.load('/Users/wanghao/实验室/LuoD_Datax/new_clear_data_for_raw.npy')
+    datax = np.load('/Users/wanghao/实验室/LuoD_Datax/whsse_normalized_for_raw_25.npy')
     print(datax.shape)
     print(datax)
     datax = np.random.permutation(datax)
@@ -83,8 +83,8 @@ def main():
     print("Step1: 交叉验证")
     kf = KFold(n_splits=10, shuffle=True)
     for train_index, test_index in kf.split(x):
-        xgb_model = xgb.XGBClassifier(max_depth=6, n_estimators=200, learning_rate=0.1, subsample=0.8,
-                                      objective='multi:softmax', num_class=5) \
+        xgb_model = xgb.XGBClassifier(max_depth=6, n_estimators=100, learning_rate=0.1, subsample=0.8,
+                                      objective='multi:softmax', num_class=25) \
             .fit(x[train_index], y[train_index])
         print("test_acc:", np.mean(xgb_model.predict(x[test_index]) == y[test_index]))
         print("train_acc:", np.mean(xgb_model.predict(x[train_index]) == y[train_index]))

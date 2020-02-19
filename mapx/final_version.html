@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="initial-scale=1.0, user-scalable=no, width=device-width">
+<title>轨迹</title>
+<link rel="stylesheet"
+	href="http://cache.amap.com/lbs/static/main1119.css" />
+<script
+	src="http://webapi.amap.com/maps?v=1.3&key=cd30473a7d7552c1c3c45b5965af02d0"></script>
+<script type="text/javascript"
+	src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript"
+	src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</head>
+<body>
+	<div style="height: 500px; width: 500px" id="container"></div>
+	<div style="margin-top: 600px;">
+		<input class="button" type="button" id="btn_submit03" value="显示"
+			style="width: 50px" /> <input class="button" type="button"
+			id="btn_submit01" value="下载" style="width: 50px" /> <input
+			class="button" type="button" id="btn_submit02" value="清除"
+			style="width: 50px" />
+	</div>
+</body>
+<script type="text/javascript">
+
+/*使用$.ajax代替$.get
+ * $.get用于封装短数据，对数据大小有限制
+ * $.get安全性不如$.ajax的post
+ * $.get本质上是将$.ajax做了封装，性能上不如直接用$.ajax
+ * $.ajax提供了异常出错处理
+ */
+$(document).ready(function(){
+	$.ajax({
+		async : true,
+		type : 'POST',
+		url : 'test.csv',
+		dataType : "text",
+		success : function(data) {
+		data = data.split("\n");
+		var n = data.length;
+		var pointArr =new Array();
+		/*一次性将数据获取到，要比用到的时候再获取性能好些*/
+		for(i in data){
+		data[i] = data[i].split(",");
+		pointArr[i]=new Array();
+		for( var j = 0; j < data[i].length; j+=2){
+			pointArr[i].push([data[i][j+1], data[i][j]]);
+			}
+		}
+		di=0;
+		$('#btn_submit01').click(function(){
+			html2canvas(document.querySelector("#container"),{scale:1, foreignObjectRendering: true}).then(function(canvas) {
+				var imgUri = canvas.toDataURL("image/png").replace("image/png",'image/octet-stream'); // 获取生成的图片的url
+				var saveLink = document.createElement( 'a');
+				saveLink.href =imgUri;
+				saveLink.download = di + '.png';
+				saveLink.click()
+				});
+			});
+		$('#btn_submit03').click(function (){
+			var map = new AMap.Map("container", {
+				mapStyle: 'amap://styles/midnight',
+				resizeEnable: true,
+				center: [116.397428, 39.90923],
+				zoom: 17
+				});
+
+			var polyline1 = new AMap.Polyline({
+				map: map,
+				path: pointArr[di],          	//设置线覆盖物路径
+				strokeColor: "#FF00FF", 		//线颜色
+				strokeOpacity: 2,       		//线透明度
+				strokeWeight: 5,        		//线宽
+				strokeStyle: "solid"  			//线样式
+					});
+			map.setFitView(polyline1);
+			$('#btn_submit02').click(function(){
+				map.clearMap();
+				});
+			/*di++如果放在清除的响应事件中，会有bug，可能造成数据丢失
+			* 所以放在显示结束，每显示一次再++
+			*/
+			if(di<n-1) di++;
+			else{
+			    alert("显示最后一条轨迹");  //已经显示完了，默认再点击显示，显示的是最后一条路径
+			}
+			});
+		},
+		error : function() {
+			/*出错处理*/
+			alert("error:出错处理");
+			}
+		});
+	});
+</script>
+</html>
